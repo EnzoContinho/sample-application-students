@@ -7,24 +7,23 @@ stages:
   
 jobs:
   include:
-    - stage: "Back - Build and Test"
+    - stage: "Build and Test"
       language: java
       jdk: oraclejdk11
       before_script:
         - cd sample-application-backend
       script:
         - echo "Maven build & test"
-        - mvn clean verify
+        - mvn clean org.jacoco:jacoco-maven-plugin:prepare-agent install sonar:sonar -Dsonar.projectKey=EnzoContinho_sample-application-students
         - echo "Run test coverage and Quality Gate ---- NOT IMPLEMENTED YET"
-    - stage: "Front - Build and Test"
+    - stage: "Build and Test"
       language: node.js
       node_js: "12.20"
       before_script:
         - cd sample-application-frontend
       script:
         - echo "NPM install and build"
-        - npm install 
-        - npm build
+        - npm run test
     - stage: "Package"
       before_script:
         - cd sample-application-backend
@@ -32,23 +31,30 @@ jobs:
         - echo "Docker build ..."
         - docker build -t 22mars1998/sample-application-students_backend .
         - echo "Docker login ..."
-        - docker login -u "$DOCKER_LOGIN" -p "$DOCKER_PASSWORD"
+        - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_LOGIN" --password-stdin
         - echo "Docker push ..."
         - docker push 22mars1998/sample-application-students_backend
+      on:
+        branch: develop  
     - stage: "Package"
       before_script:
-        - cd sample-application-students_frontend
+        - cd sample-application-frontend
       script:
         - echo "Docker build ..."
         - docker build -t 22mars1998/sample-application-students_frontend .
         - echo "Docker login ..."
-        - docker login -u "$DOCKER_LOGIN" -p "$DOCKER_PASSWORD"
+        - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_LOGIN" --password-stdin
         - echo "Docker push ..."
         - docker push 22mars1998/sample-application-students_frontend
-
+      on:
+        branch: develop
 cache:
   directories:
     - "$HOME/.m2/repository"
     - "$HOME/.npm"
 services:
 - docker
+addons:
+  sonarcloud:
+    organization: "enzocontinho"
+    token: "$SONARCLOUD_TOKEN"
