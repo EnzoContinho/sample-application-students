@@ -30,21 +30,21 @@ jobs:
         - cd sample-application-backend
       script:
         - echo "Docker build ..."
-        - docker build -t sample-application-students_backend .
+        - docker build -t 22mars1998/sample-application-students_backend .
         - echo "Docker login ..."
-        - docker login -u $DOCKER_LOGIN -p $DOCKER_PASSWORD
+        - docker login -u "$DOCKER_LOGIN" -p "$DOCKER_PASSWORD"
         - echo "Docker push ..."
-        - docker push 22mars1998/mydocker_22mars1998/sample-application-students_backend
+        - docker push 22mars1998/sample-application-students_backend
     - stage: "Package"
       before_script:
         - cd sample-application-students_frontend
       script:
         - echo "Docker build ..."
-        - docker build -t sample-application-students_frontend .
+        - docker build -t 22mars1998/sample-application-students_frontend .
         - echo "Docker login ..."
-        - docker login -u $DOCKER_LOGIN -p $DOCKER_PASSWORD
+        - docker login -u "$DOCKER_LOGIN" -p "$DOCKER_PASSWORD"
         - echo "Docker push ..."
-        - docker push 22mars1998/mydocker_22mars1998/sample-application-students_frontend
+        - docker push 22mars1998/sample-application-students_frontend
 
 cache:
   directories:
